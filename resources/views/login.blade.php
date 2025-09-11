@@ -28,6 +28,6 @@
       </ul>
     @endif
     
-    <button><a href="{{ route('register') }}">新規登録</a></button>
+    <button type="button" onclick="location.href='{{ route('register') }}'">新規登録へ</button>
 </body>
 </html>

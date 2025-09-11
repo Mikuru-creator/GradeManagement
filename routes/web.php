@@ -11,10 +11,6 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
 // ユーザー認証関連
 Route::get('/login', 'UserController@loginForm')->name('login');        // 管理ユーザーログイン画面
 Route::post('/login', 'UserController@login')->name('login.post');            // ログイン処理

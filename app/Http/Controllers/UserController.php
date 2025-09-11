@@ -60,7 +60,7 @@ class UserController extends Controller
     Auth::login($user);
     $request->session()->regenerate();
 
-    // 登録処理を書く
+    // 登録処理
     return redirect()->route('menu');
     }
 }
