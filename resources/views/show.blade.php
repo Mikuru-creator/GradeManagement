@@ -74,7 +74,7 @@
         <a href="{{ route('grades.create', ['student_id' => $student->id]) }}">成績登録</a>
     </p>
 
-    <button><a href="{{ route('students.index') }}">戻る</a></button>
+    <button type="button" onclick="location.href='{{ route('students.index') }}'">戻る</button>
 
 </body>
 </html>
