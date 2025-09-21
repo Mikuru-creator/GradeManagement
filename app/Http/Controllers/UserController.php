@@ -43,24 +43,21 @@ class UserController extends Controller
     // 新規登録処理
     public function register(Request $request)
     {
-    $data = $request->validate([
-            'user_name' => 'required|max:255',
-            'email' => 'required|email|unique:users,email|max:255|regex:/\A[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}\z/',
-            'password' => 'required|confirmed|min:8|max:72|regex:/\A[a-zA-Z0-9]+\z/',
-    ]);
+        $data = $request->validate([
+                'user_name' => 'required|max:255',
+                'email' => 'required|email|unique:users,email|max:255|regex:/\A[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}\z/',
+                'password' => 'required|confirmed|min:8|max:72|regex:/\A[a-zA-Z0-9]+\z/',
+        ]);
 
-    // ユーザー作成（パスワードは必ずハッシュ）
-    $user = User::create([
-        'user_name'     => $data['user_name'],
-        'email'    => $data['email'],
-        'password' => Hash::make($data['password']),
-    ]);
+        $user = User::create([
+            'user_name'     => $data['user_name'],
+            'email'    => $data['email'],
+            'password' => Hash::make($data['password']),
+        ]);
 
-    // そのままログインさせる
-    Auth::login($user);
-    $request->session()->regenerate();
+        Auth::login($user);
+        $request->session()->regenerate();
 
-    // 登録処理
-    return redirect()->route('menu');
+        return redirect()->route('menu');
     }
 }

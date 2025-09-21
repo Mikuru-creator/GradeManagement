@@ -7,7 +7,10 @@
 <body>
     <h1>学生詳細画面</h1>
 
-    <!-- 学生情報表示 -->
+    @if (session('success'))
+        <p style="color:green">{{ session('success') }}</p>
+    @endif
+
     <h2>学生情報</h2>
     <table border="1">
         <tr><th>学年</th><td>{{ $student->grade }}</td></tr>
@@ -23,12 +26,10 @@
         <tr><th>コメント</th><td>{{ $student->comment }}</td></tr>
     </table>
 
-    <!-- 学生編集ボタン -->
     <p>
         <a href="{{ route('students.edit', $student->id) }}">学生編集</a>
     </p>
 
-    <!-- 成績表示 -->
     <h2>成績</h2>
     <table border="1">
         <thead>
@@ -69,12 +70,10 @@
         </tbody>
     </table>
 
-    <!-- 成績登録ボタン -->
     <p>
         <a href="{{ route('grades.create', ['student_id' => $student->id]) }}">成績登録</a>
     </p>
 
-    <!-- 戻るボタン -->
     <button><a href="{{ route('students.index') }}">戻る</a></button>
 
 </body>

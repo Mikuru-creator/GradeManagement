@@ -19,17 +19,14 @@ class StudentController extends Controller
     // 学生登録処理
     public function store(Request $request)
     {
-        // バリデーション
         $request->validate([
             'name' => 'required|string|max:255',
             'address' => 'required|string|max:255',
             'img_path' => 'required|image',
         ]);
 
-        // 画像アップロード処理
         $imgPath = $request->file('img_path')->store('images', 'public');
 
-        // データ保存
         Student::create([
             'name' => $request->name,
             'address' => $request->address,
@@ -39,16 +36,16 @@ class StudentController extends Controller
 
         return redirect()->route('students.index')->with('success', '学生を登録しました');
     }
+
+    //　学生検索
     public function index(Request $request)
     {
         $query = \App\Student::query();
 
-        // 学年で絞り込み
         if ($request->filled('grade')) {
             $query->where('grade', $request->grade);
         }
 
-        // 名前で絞り込み（部分一致）
         if ($request->filled('name')) {
             $query->where('name', 'like', '%' . $request->name . '%');
         }
@@ -58,76 +55,75 @@ class StudentController extends Controller
         return view('index', compact('students'));
     }
 
+    //学生削除
     public function destroy($id)
     {
         $student = Student::findOrFail($id);
 
         DB::transaction(function () use ($student) {
-            // 成績を先に全削除（リレーション想定）
-            if (method_exists($student, 'grades')) {
-                $student->grades()->delete();
-            }
-
-            // 顔写真があればストレージから削除
-            if (!empty($student->img_path)) {
-                Storage::disk('public')->delete($student->img_path);
-            }
-
-            // 学生本体を削除
+            $student->grades()->delete();
             $student->delete();
         });
+
+          if (!empty($student->img_path)) {
+            Storage::disk('public')->delete($student->img_path);
+        }
 
         return redirect()
             ->route('students.index')
             ->with('success', '学生を削除しました。');
     }
 
+    // 学生詳細表示
     public function show($id)
     {
         $student = Student::with('grades')->findOrFail($id);
         return view('show', compact('student'));
     }
 
+    // 学生編集表示
     public function edit($id)
     {
         $student = Student::findOrFail($id);
         return view('edit', compact('student'));
     }
 
-// 更新処理
+    // 更新処理
     public function update(Request $request, $id)
     {
-    $student = Student::findOrFail($id);
+        $student = Student::findOrFail($id);
 
-    $data = $request->validate([
-        'grade'    => 'required|integer|min:1|max:6',
-        'name'     => 'required|string|max:255',
-        'address'  => 'required|string|max:255',
-        'comment'  => 'nullable|string|max:1000',
-        'img_path' => 'nullable|image',
-    ]);
+        $data = $request->validate([
+            'grade'    => 'required|integer|min:1|max:6',
+            'name'     => 'required|string|max:255',
+            'address'  => 'required|string|max:255',
+            'comment'  => 'nullable|string|max:1000',
+            'img_path' => 'nullable|image',
+        ]);
 
-    // 画像が来たら差し替え
-    if ($request->hasFile('img_path')) {
-        if ($student->img_path && Storage::disk('public')->exists($student->img_path)) {
-            Storage::disk('public')->delete($student->img_path);
+        if ($request->hasFile('img_path')) {
+            if ($student->img_path && Storage::disk('public')->exists($student->img_path)) {
+                Storage::disk('public')->delete($student->img_path);
+            }
+            $data['img_path'] = $request->file('img_path')->store('images', 'public');
+        } else {
+            unset($data['img_path']);
         }
-        $data['img_path'] = $request->file('img_path')->store('images', 'public');
-    } else {
-        unset($data['img_path']);
-    }
 
-    // fillable気にせず安全に代入
-    $student->grade   = $data['grade'];
-    $student->name    = $data['name'];
-    $student->address = $data['address'];
-    $student->comment = $data['comment'] ?? null;
-    if (isset($data['img_path'])) {
-        $student->img_path = $data['img_path'];
-    }
-    $student->save();
+        $student->grade   = $data['grade'];
+        $student->name    = $data['name'];
+        $student->address = $data['address'];
+        $student->comment = $data['comment'] ?? null;
+        if (isset($data['img_path'])) {
+            $student->img_path = $data['img_path'];
+        }
+        $student->save();
 
-    return redirect()->route('students.show', $student->id)
-                     ->with('success', '学生情報を更新しました');
+        return redirect()->route('students.show', $student->id)
+                        ->with('success', '学生情報を更新しました');
+        
+        return back()->withErrors(['message' => '更新に失敗しました']) // ← $errors に入れる
+                     ->withInput();
+
+        }
     }
-}

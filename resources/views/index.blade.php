@@ -5,9 +5,12 @@
     <title>学生表示</title>
 </head>
 <body>
-    <h1>学生表示画面</h1>
+    <h1>学生表示</h1>
+    
+    @if (session('success'))
+        <p style="color:green">{{ session('success') }}</p>
+    @endif
 
-    <!-- 検索フォーム -->
     <form action="{{ route('students.index') }}" method="GET">
         <label>学年：</label>
         <select name="grade">
@@ -23,7 +26,6 @@
         <button type="submit">検索</button>
     </form>
 
-    <!-- 学生一覧 -->
     <table border="1" style="margin-top:20px;">
         <thead>
             <tr>
@@ -50,6 +52,6 @@
         </tbody>
     </table>
     <br>
-    <button><a href="{{ route('menu') }}">戻る</a></button>
+    <button type="button" onclick="location.href='{{ route('menu') }}'">戻る</button>
 </body>
 </html>

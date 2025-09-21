@@ -12,9 +12,4 @@ class SchoolGrade extends Model
         'health_and_physical_education',
     ];
 
-    // 学生への逆リレーション
-    public function student()
-    {
-        return $this->belongsTo(Student::class);
-    }
 }

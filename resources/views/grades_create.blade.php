@@ -1,4 +1,3 @@
-<!-- resources/views/grades/create.blade.php -->
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -12,33 +11,15 @@
         <p style="color:green">{{ session('success') }}</p>
     @endif
 
-    @if ($errors->any())
-        <ul style="color:red; margin-bottom:1rem;">
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    @endif
-
     @isset($student)
         <p>対象学生：{{ $student->name }}（ID: {{ $student->id }}）</p>
     @endisset
-
-    <p style="margin: .5rem 0;">
-        {{-- 戻るボタン（学生詳細があればそっちへ、なければ一覧へ） --}}
-        @isset($student)
-            <a href="{{ route('students.show', $student->id) }}">← 戻る</a>
-        @else
-            <a href="{{ route('students.index') }}">← 戻る</a>
-        @endisset
-    </p>
 
     <form action="{{ route('grades.store') }}" method="POST">
         @csrf
         <input type="hidden" name="student_id"
                value="{{ old('student_id', $student->id ?? '') }}">
 
-        {{-- 学年 --}}
         <div>
             <label>学年（必須）</label>
             <select name="grade" required>
@@ -52,7 +33,6 @@
             @error('grade')<div style="color:red">{{ $message }}</div>@enderror
         </div>
 
-        {{-- 学期 --}}
         <div>
             <label>学期（必須）</label>
             <select name="term" required>
@@ -67,7 +47,6 @@
         </div>
 
         @php
-            // 5段階評価でプルダウン生成
             $five = [1,2,3,4,5];
             $subjects = [
                 'japanese' => '国語',
@@ -101,13 +80,6 @@
             <button type="submit">成績を登録する</button>
         </div>
     </form>
-
-    <p style="margin-top: .5rem;">
-        @isset($student)
-            <a href="{{ route('students.show', $student->id) }}">← 戻る</a>
-        @else
-            <a href="{{ route('students.index') }}">← 戻る</a>
-        @endisset
-    </p>
+    <button type="button" onclick="location.href='{{ route('students.show', $student->id) }}'">戻る</button>
 </body>
 </html>

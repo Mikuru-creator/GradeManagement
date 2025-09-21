@@ -46,21 +46,8 @@ class GradeController extends Controller
             'health_and_physical_education' => 'required|integer|min:1|max:5',
         ]);
 
-
-        // fillable未設定でも動くように手で詰める
-        $g = new SchoolGrade();
-        $g->student_id = $data['student_id'];
-        $g->grade = $data['grade'];
-        $g->term = $data['term'];
-        $g->japanese = $data['japanese'];
-        $g->math = $data['math'];
-        $g->science = $data['science'];
-        $g->social_studies = $data['social_studies'];
-        $g->music = $data['music'];
-        $g->home_economics = $data['home_economics'];
-        $g->english = $data['english'];
-        $g->art = $data['art'];
-        $g->health_and_physical_education = $data['health_and_physical_education'];
+        $g = new \App\SchoolGrade();
+        $g->fill($data);
         $g->save();
 
         return redirect()->route('students.show', $data['student_id'])
@@ -70,7 +57,7 @@ class GradeController extends Controller
     public function edit($id)
     {
         $grade = \App\SchoolGrade::findOrFail($id);
-        return view('grades_edit', compact('grade')); // ← 既存の編集Blade名
+        return view('grades_edit', compact('grade'));
     }
     
     public function update($id, Request $request)
