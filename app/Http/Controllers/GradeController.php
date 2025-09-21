@@ -54,12 +54,14 @@ class GradeController extends Controller
                          ->with('success', '成績を登録しました');
     }
 
+    // 成績編集
     public function edit($id)
     {
         $grade = \App\SchoolGrade::findOrFail($id);
         return view('grades_edit', compact('grade'));
     }
-    
+
+    // 成績更新
     public function update($id, Request $request)
     {
         $data = $request->validate([
@@ -79,6 +81,8 @@ class GradeController extends Controller
         $grade = SchoolGrade::findOrFail($id);
         $grade->update($data);
 
-        return back()->with('success', '成績を更新しました');
+        return redirect()
+            ->route('students.show', $grade->student_id)
+            ->with('success', '成績を更新しました');
     }
 }

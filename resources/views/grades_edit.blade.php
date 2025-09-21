@@ -51,8 +51,8 @@
             @error($name)
                 <div style="color:red">{{ $message }}</div>
             @enderror
-          </div>
-            @endforeach
+        </div>
+        @endforeach
 
         <button type="submit">更新</button>
     </form>
