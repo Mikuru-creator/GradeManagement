@@ -6,8 +6,8 @@
 </head>
 <body>
     <h1>メニュー画面</h1>
-        @if (session('status'))
-            <p style="color:green">{{ session('status') }}</p>
+        @if (session('success'))
+            <p style="color:green">{{ session('success') }}</p>
         @endif
         <form action="{{ route('grades.promote') }}" method="POST" style="display:inline;">
             @csrf

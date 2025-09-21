@@ -40,7 +40,7 @@ class StudentController extends Controller
     //　学生検索
     public function index(Request $request)
     {
-        $query = \App\Student::query();
+        $query = Student::query();
 
         if ($request->filled('grade')) {
             $query->where('grade', $request->grade);
@@ -94,7 +94,7 @@ class StudentController extends Controller
         $student = Student::findOrFail($id);
 
         $data = $request->validate([
-            'grade'    => 'required|integer|min:1|max:6',
+            'grade'    => 'required|integer|min:1|max:3',
             'name'     => 'required|string|max:255',
             'address'  => 'required|string|max:255',
             'comment'  => 'nullable|string|max:1000',
@@ -121,9 +121,5 @@ class StudentController extends Controller
 
         return redirect()->route('students.show', $student->id)
                         ->with('success', '学生情報を更新しました');
-        
-        return back()->withErrors(['message' => '更新に失敗しました']) // ← $errors に入れる
-                     ->withInput();
-
         }
     }

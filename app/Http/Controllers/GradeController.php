@@ -13,14 +13,14 @@ class GradeController extends Controller
     {
         $MAX_GRADE = 3;
 
-        $affected = DB::table('students')
-        ->where('grade', '<', $MAX_GRADE)
-        ->update([
-            'grade' => DB::raw('grade + 1'),
-            'updated_at' => now(),
+        DB::table('students')
+            ->where('grade', '<', $MAX_GRADE)
+            ->update([
+                'grade' => DB::raw('grade + 1'),
+                'updated_at' => now(),
         ]);
 
-        return back()->with('status', '学年を更新しました。');
+        return back()->with('success', '学年を更新しました'); 
     }
     public function create($student_id)
     {
@@ -46,7 +46,7 @@ class GradeController extends Controller
             'health_and_physical_education' => 'required|integer|min:1|max:5',
         ]);
 
-        $g = new \App\SchoolGrade();
+        $g = new SchoolGrade();
         $g->fill($data);
         $g->save();
 
@@ -57,12 +57,12 @@ class GradeController extends Controller
     // 成績編集
     public function edit($id)
     {
-        $grade = \App\SchoolGrade::findOrFail($id);
+        $grade = SchoolGrade::findOrFail($id);
         return view('grades_edit', compact('grade'));
     }
 
     // 成績更新
-    public function update($id, Request $request)
+    public function update(Request $request,$id)
     {
         $data = $request->validate([
             'grade'   => 'required|integer|min:1|max:3',
