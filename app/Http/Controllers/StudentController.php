@@ -40,18 +40,21 @@ class StudentController extends Controller
     //　学生検索
     public function index(Request $request)
     {
-        $query = Student::query();
+        $q = Student::query();
 
-        if ($request->filled('grade')) {
-            $query->where('grade', $request->grade);
+        if ($request->filled('grade')) $q->where('grade', $request->grade);
+        if ($request->filled('name'))  $q->where('name', 'like', '%'.$request->name.'%');
+
+        if ($request->get('sort') === 'grade') {
+            $q->orderBy('grade', $request->get('dir') === 'desc' ? 'desc' : 'asc')
+            ->orderBy('id', 'asc');
         }
 
-        if ($request->filled('name')) {
-            $query->where('name', 'like', '%' . $request->name . '%');
+        $students = $q->get();
+
+        if ($request->ajax()) {
+            return view('rows', compact('students')); 
         }
-
-        $students = $query->get();
-
         return view('index', compact('students'));
     }
 
@@ -75,11 +78,23 @@ class StudentController extends Controller
     }
 
     // 学生詳細表示
-    public function show($id)
+    public function show($id, \Illuminate\Http\Request $request)
     {
-        $student = Student::with('grades')->findOrFail($id);
-        return view('show', compact('student'));
+        $student = \App\Student::findOrFail($id);
+
+        $grades = $student->grades()
+            ->when($request->filled('grade'), fn($q) => $q->where('grade', $request->grade))
+            ->when($request->filled('term'),  fn($q) => $q->where('term',  $request->term))
+            ->orderBy('id','asc')
+            ->get();
+
+        if ($request->ajax()) {
+            return view('grades_rows', compact('grades'))->render();
+        }
+
+        return view('show', compact('student', 'grades'));
     }
+
 
     // 学生編集表示
     public function edit($id)

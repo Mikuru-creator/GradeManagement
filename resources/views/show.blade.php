@@ -31,7 +31,26 @@
     </p>
 
     <h2>成績</h2>
-    <table border="1">
+
+    <form id="grade-search" action="{{ route('students.show', $student->id) }}" method="GET" style="margin:10px 0;">
+        <label>学年：</label>
+        <select name="grade">
+            <option value="">--</option>
+            <option value="1" {{ request('grade')=='1' ? 'selected' : '' }}>1年</option>
+            <option value="2" {{ request('grade')=='2' ? 'selected' : '' }}>2年</option>
+            <option value="3" {{ request('grade')=='3' ? 'selected' : '' }}>3年</option>
+        </select>
+
+        <label>学期：</label>
+        <select name="term">
+            <option value="">--</option>
+            <option value="1" {{ request('term')=='1' ? 'selected' : '' }}>1学期</option>
+            <option value="2" {{ request('term')=='2' ? 'selected' : '' }}>2学期</option>
+            <option value="3" {{ request('term')=='3' ? 'selected' : '' }}>3学期</option>
+        </select>
+
+        <button type="submit">検索</button>
+    </form>    <table border="1">
         <thead>
             <tr>
                 <th>学年</th>
@@ -48,25 +67,8 @@
                 <th>編集</th>
             </tr>
         </thead>
-        <tbody>
-            @foreach($student->grades as $grade)
-            <tr>
-                <td>{{ $grade->grade }}</td>
-                <td>{{ $grade->term }}</td>
-                <td>{{ $grade->japanese }}</td>
-                <td>{{ $grade->math }}</td>
-                <td>{{ $grade->science }}</td>
-                <td>{{ $grade->social_studies }}</td>
-                <td>{{ $grade->music }}</td>
-                <td>{{ $grade->home_economics }}</td>
-                <td>{{ $grade->english }}</td>
-                <td>{{ $grade->art }}</td>
-                <td>{{ $grade->health_and_physical_education }}</td>
-                <td>
-                    <a href="{{ route('grades.edit', $grade->id) }}">編集</a>
-                </td>
-            </tr>
-            @endforeach
+        <tbody id="grades-body">
+        @include('grades_rows', ['grades' => $grades])
         </tbody>
     </table>
 
@@ -76,5 +78,29 @@
 
     <button type="button" onclick="location.href='{{ route('students.index') }}'">戻る</button>
 
+
 </body>
+    <script>
+        (() => {
+        const form  = document.getElementById('grade-search');
+        const tbody = document.getElementById('grades-body');
+
+        function params() {
+            const fd = new FormData(form), p = new URLSearchParams();
+            for (const [k,v] of fd.entries()) if (v !== '') p.set(k, v);
+            return p;
+        }
+
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            const p = params();
+            fetch(form.action + '?' + p.toString(), {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(r => r.text())
+            .then(html => { tbody.innerHTML = html; });
+        });
+        })();
+    </script>
+
 </html>
